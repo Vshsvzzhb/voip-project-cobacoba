@@ -197,6 +197,10 @@
       setAvatar(els.myAvatar, username);
       els.myUsername.textContent = username;
 
+      // Update mobile header username
+      const mobileUsernameEl = document.querySelector('#mobile-username');
+      if (mobileUsernameEl) mobileUsernameEl.textContent = username;
+
       showScreen('app-screen');
       showToast(`Selamat datang, ${username}! 🎉`, 'success');
     });
@@ -420,6 +424,12 @@
       return;
     }
 
+    // Close sidebar on mobile when placing a call
+    const sidebarEl = document.querySelector('.sidebar');
+    const overlayEl = document.querySelector('#sidebar-overlay');
+    if (sidebarEl) sidebarEl.classList.remove('open');
+    if (overlayEl) overlayEl.classList.remove('active');
+
     state.currentCallPeer = { socketId, username };
     state.socket.emit('call-request', { to: socketId, callerName: state.myUsername });
 
@@ -617,6 +627,36 @@
     const isActive = els.speakerBtn.classList.contains('active');
     showToast(isActive ? '🔇 Speaker dimatikan' : '🔊 Speaker dinyalakan', 'info');
   });
+
+  // ─── Mobile Sidebar Toggle ───
+  const mobileMenuBtn = $('#mobile-menu-btn');
+  const sidebarOverlay = $('#sidebar-overlay');
+  const sidebar = document.querySelector('.sidebar');
+  const mobileUsername = $('#mobile-username');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+  }
+
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', () => {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
+  }
 
   // ═══════════════════════════════════════
   //  INITIALIZATION
